@@ -530,18 +530,118 @@
     .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .5s, transform .5s; }
     .fade-in.visible { opacity: 1; transform: translateY(0); }
 
+    /* ─── HAMBURGER MENU ─────────────────────── */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column; justify-content: center; align-items: center;
+      gap: 5px; width: 40px; height: 40px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+    }
+
+    .nav-hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--text); border-radius: 2px;
+      transition: transform .3s, opacity .3s;
+    }
+
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .nav-drawer {
+      display: none;
+      position: fixed; top: 60px; left: 0; right: 0; z-index: 99;
+      background: rgba(13,17,23,.97);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 5%;
+      flex-direction: column; gap: .25rem;
+    }
+
+    .nav-drawer.open { display: flex; }
+
+    .nav-drawer a {
+      color: var(--text-2); text-decoration: none; font-size: .95rem;
+      padding: .75rem .5rem; border-bottom: 1px solid var(--border);
+      transition: color .2s;
+    }
+
+    .nav-drawer a:last-child { border-bottom: none; }
+    .nav-drawer a:hover { color: var(--accent); }
+
     /* ─── RESPONSIVE ──────────────────────────── */
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .case-narrative { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
       .activity-grid { grid-template-columns: 1fr; }
       .cta-card { position: static; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .nav-hamburger { display: flex; }
+
+      .hero { padding: 90px 5% 50px; }
+      .hero h1 { font-size: clamp(2rem, 8vw, 2.8rem); }
+      .hero-sub { font-size: 1rem; }
+
+      .hero-stats { gap: 1.5rem; }
+      .stat-num { font-size: 1.5rem; }
+
+      .hero-btns { flex-direction: column; gap: .75rem; }
+      .btn-primary, .btn-secondary { text-align: center; }
+
+      .section-title { font-size: clamp(1.4rem, 5vw, 1.9rem); }
+
+      .filter-tabs { gap: .4rem; }
+      .filter-btn { font-size: .78rem; padding: .35rem .75rem; }
+
       .projects-grid { grid-template-columns: 1fr; }
+      .demo-area { height: 180px; }
+
+      .case-narrative { grid-template-columns: 1fr; }
+      .case-header { padding: 1.2rem 1.25rem; gap: .75rem; }
+      .case-body { padding: 0 1.25rem 1.25rem; }
+
+      code.hljs { font-size: .75rem !important; }
+      pre { overflow-x: auto; }
+
+      .activity-grid { grid-template-columns: 1fr; }
+      .cta-card { position: static; }
+
+      .github-stats-row { grid-template-columns: 1fr 1fr; }
     }
 
     @media (max-width: 480px) {
       section { padding: 60px 4%; }
-      .hero { padding: 90px 4% 50px; }
+      .hero { padding: 80px 4% 40px; }
+
+      .hero-stats { gap: 1.2rem; }
+      .stat-num { font-size: 1.35rem; }
+      .stat-label { font-size: .72rem; }
+
+      .projects-grid { gap: 1rem; }
+
+      .case-title { font-size: .95rem; }
+      .case-summary { font-size: .8rem; }
+      .case-num { font-size: .7rem; }
+
+      .arch-wrap { padding: 1.25rem; }
+      .arch-box { font-size: .75rem; padding: .5rem .9rem; }
+
+      .github-stats-row { grid-template-columns: 1fr 1fr; gap: .5rem; }
+      .github-stat-num { font-size: 1.2rem; }
+
+      .cta-card { padding: 1.5rem; }
+      .cta-card h3 { font-size: 1.05rem; }
+
+      footer { padding: 1.5rem 4%; }
+    }
+
+    @media (max-width: 360px) {
+      .hero-stats { gap: 1rem; }
+      .stat-num { font-size: 1.2rem; }
+      .filter-btn { font-size: .72rem; padding: .3rem .6rem; }
+      .github-stats-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -556,7 +656,18 @@
     <li><a href="#contact">연락하기</a></li>
   </ul>
   <a class="nav-cta" href="#contact">채용 문의</a>
+  <button class="nav-hamburger" id="navHamburger" aria-label="메뉴 열기">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- ─── MOBILE DRAWER ────────────────────────────── -->
+<div class="nav-drawer" id="navDrawer">
+  <a href="#projects" class="drawer-link">프로젝트</a>
+  <a href="#casestudy" class="drawer-link">케이스 스터디</a>
+  <a href="#contact" class="drawer-link">연락하기</a>
+  <a href="#contact" class="drawer-link" style="color:var(--accent); font-weight:600;">채용 문의</a>
+</div>
 
 <!-- ─── HERO ─────────────────────────────────────── -->
 <section class="hero">
@@ -1037,6 +1148,23 @@ class MyApplication : Application() {
   // ─── Code highlight ───────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     hljs.highlightAll();
+  });
+
+  // ─── Hamburger menu ───────────────────────────────
+  const hamburger = document.getElementById('navHamburger');
+  const drawer = document.getElementById('navDrawer');
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = drawer.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
+  });
+
+  document.querySelectorAll('.drawer-link').forEach(link => {
+    link.addEventListener('click', () => {
+      drawer.classList.remove('open');
+      hamburger.classList.remove('open');
+    });
   });
 
   // ─── Tech tag filter ─────────────────────────────
